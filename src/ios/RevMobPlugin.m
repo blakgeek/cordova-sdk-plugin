@@ -22,6 +22,7 @@ bool isLoadedCustomBanner = false;
     @try {
         NSString* appId = [command.arguments objectAtIndex:0];
         if (appId != nil && [appId length] > 0) {
+
             [RevMobAds startSessionWithAppID:appId
                           withSuccessHandler:^{
                               [self eventCallbackSuccess:@"SESSION_STARTED" :command];
@@ -138,13 +139,17 @@ bool isLoadedCustomBanner = false;
 
 -(void) loadRewardedVideo:(CDVInvokedUrlCommand*)command {
     self.rewardedVideo = [[RevMobAds session] fullscreen];
+    self.loadRewardedVideoCommand = command;
     self.rewardedVideo.delegate = self;
     [self.rewardedVideo loadRewardedVideo];
 
 }
 
 -(void) showRewardedVideo:(CDVInvokedUrlCommand*)command{
-    if(self.rewardedVideo != nil) [self.rewardedVideo showRewardedVideo];
+    if(self.rewardedVideo) {
+        self.showRewardedVideoCommand = command;
+        [self.rewardedVideo showRewardedVideo];
+    }
 }
 
 - (void)preLoadBanner:(CDVInvokedUrlCommand*)command {
@@ -548,27 +553,27 @@ bool isLoadedCustomBanner = false;
 
 /////Rewarded Video Listeners/////
 -(void)revmobRewardedVideoDidLoad:(NSString *)placementId {
-    [self eventCallbackSuccess:@"REWARDED_VIDEO_LOADED" :self.sessionCommand];
+    [self eventCallbackSuccess:@"REWARDED_VIDEO_LOADED" :self.loadRewardedVideoCommand];
     NSLog(@"[RevMob Sample App] Rewarded Video loaded.");
 }
 
 -(void)revmobRewardedVideoDidFailWithError:(NSError *)error onPlacement:(NSString *)placementId {
-    [self eventCallbackError:@"REWARDED_VIDEO_FAILED_TO_LOAD" :self.sessionCommand];
+    [self eventCallbackError:@"REWARDED_VIDEO_FAILED_TO_LOAD" :self.loadRewardedVideoCommand];
     NSLog(@"[RevMob Sample App] Rewarded Video failed to load.");
 }
 
 -(void)revmobRewardedVideoNotCompletelyLoaded:(NSString *)placementId {
-    [self eventCallbackError:@"REWARDED_VIDEO_NOT_COMPLETELY_LOADED" :self.sessionCommand];
+    [self eventCallbackError:@"REWARDED_VIDEO_NOT_COMPLETELY_LOADED" :self.loadRewardedVideoCommand];
     NSLog(@"[RevMob Sample App] Rewarded Video not completely loaded.");
 }
 
 -(void)revmobRewardedVideoDidStart:(NSString *)placementId {
-    [self eventCallbackSuccess:@"REWARDED_VIDEO_STARTED" :self.sessionCommand];
+    [self eventCallbackSuccess:@"REWARDED_VIDEO_STARTED" :self.showRewardedVideoCommand];
     NSLog(@"[RevMob Sample App] Rewarded Video started.");
 }
 
 -(void)revmobRewardedVideoDidComplete:(NSString *)placementId {
-    [self eventCallbackSuccess:@"REWARDED_VIDEO_COMPLETED" :self.sessionCommand];
+    [self eventCallbackSuccess:@"REWARDED_VIDEO_COMPLETED" :self.showRewardedVideoCommand];
     NSLog(@"[RevMob Sample App] Rewarded Video completed.");
 }
 

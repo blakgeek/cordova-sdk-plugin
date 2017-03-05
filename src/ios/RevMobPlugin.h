@@ -59,5 +59,6 @@
 - (void) preLoadCustomBanner:(CDVInvokedUrlCommand*)command;
 
 @property (nonatomic, strong)CDVInvokedUrlCommand *sessionCommand;
-
+@property (nonatomic, strong)CDVInvokedUrlCommand *loadRewardedVideoCommand;
+@property (nonatomic, strong)CDVInvokedUrlCommand *showRewardedVideoCommand;
 @end
